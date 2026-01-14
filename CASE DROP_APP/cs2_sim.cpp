@@ -11,7 +11,7 @@
 
 using namespace std;
 
-// --- Enums and Constants ---
+// --- Stałe ---
 
 enum class Rarity {
     BLUE,
@@ -33,14 +33,14 @@ string rarityToString(Rarity rarity) {
 }
 
 string getRarityColorCode(Rarity rarity) {
-    // Basic ANSI colors for terminals that support it, 
-    // or just textual tags as requested if colors aren't reliable.
-    // User asked for textual tags like [BLUE], but we can add codes if we want.
-    // Strict requirement: "Użyj kolorowych oznaczeń (np. tekstowo: [BLUE], [GOLD])"
+    // Podstawowe kolory ANSI dla terminali, które to wspierają,
+    // lub tekstowe oznaczenia jeśli kolory nie są niezawodne.
+    // Użytkownik prosił o te.\cs2_sim.exekstowe oznaczenia jak [BLUE], więc zwracamy je.
+    // Wymaganie: "Użyj kolorowych oznaczeń (np. tekstowo: [BLUE], [GOLD])"
     return rarityToString(rarity);
 }
 
-// --- Classes ---
+// --- Klasy ---
 
 class Item {
 private:
@@ -206,7 +206,7 @@ private:
         gamma.addItem(Item("M4A1-S | Mecha Industries", Rarity::PINK, 15.00));
         gamma.addItem(Item("Desolate Space", Rarity::PINK, 18.00));
         
-        gamma.addItem(Item("M4A4 | Desolate Space", Rarity::PINK, 15.00)); // Duplicate name fix
+        gamma.addItem(Item("M4A4 | Desolate Space", Rarity::PINK, 15.00)); // Poprawka duplikatu nazwy
         gamma.addItem(Item("Glock-18 | Wasteland Rebel", Rarity::RED, 40.00));
         
         gamma.addItem(Item("M9 Bayonet | Lore", Rarity::GOLD, 1200.00));
@@ -240,7 +240,7 @@ private:
         dreams.addItem(Item("G3SG1 | Dream Glade", Rarity::PURPLE, 0.30));
         
         dreams.addItem(Item("M4A1-S | Night Terror", Rarity::PINK, 2.50));
-        dreams.addItem(Item("Savage", Rarity::PINK, 2.50)); // Fix
+        dreams.addItem(Item("Savage", Rarity::PINK, 2.50)); // Poprawka
         
         dreams.addItem(Item("AK-47 | Nightwish", Rarity::RED, 60.00));
         dreams.addItem(Item("MP9 | Starlight Protector", Rarity::RED, 25.00));
@@ -250,14 +250,14 @@ private:
     }
 
     Item rollItem(const Case& c) {
-        // Weights:
+        // Procenty szans:
         // Blue: 79.92%
         // Purple: 15.98%
         // Pink: 3.2%
         // Red: 0.64%
         // Gold: 0.26%
-        
-        // Simplified weights for demonstration but keeping order of magnitude:
+
+        // Uproszczone wagi do demonstracji, zachowując rząd wielkości:
         // Blue: 80%
         // Purple: 15%
         // Pink: 3%
@@ -274,7 +274,7 @@ private:
         else if (roll <= 9950) targetRarity = Rarity::RED;
         else targetRarity = Rarity::GOLD;
 
-        // Filter items from case by rarity
+        // Filtruj przedmioty ze skrzyni według rzadkości
         vector<Item> pool;
         const auto& allItems = c.getItems();
         for (const auto& item : allItems) {
@@ -283,7 +283,7 @@ private:
             }
         }
 
-        // If pool is empty (e.g. case doesn't have that rarity), fallback to Blue
+        // Jeśli pula jest pusta (np. skrzynia nie zawiera tej rzadkości), użyj Blue jako zapas
         if (pool.empty()) {
              for (const auto& item : allItems) {
                 if (item.getRarity() == Rarity::BLUE) {
@@ -292,7 +292,7 @@ private:
             }
         }
         
-        // If still empty (bad case definition), just pick random
+        // Jeśli nadal pusta (błędna definicja skrzyni), wybierz losowy przedmiot
         if (pool.empty()) pool = allItems;
 
         uniform_int_distribution<> indexDist(0, pool.size() - 1);
@@ -302,7 +302,7 @@ private:
     void animateOpening(const Item& wonItem, const Case& c) {
         cout << "\nOtwieranie skrzyni " << c.getName() << "..." << endl;
         
-        // Fake rolling items
+        // Symulacja przewijania/przeglądania przedmiotów
         vector<Item> animationPool = c.getItems();
         uniform_int_distribution<> dist(0, animationPool.size() - 1);
         
@@ -313,11 +313,11 @@ private:
             Item randomItem = animationPool[dist(rng)];
             cout << "\r> " << randomItem.getName() << "   " << flush;
             this_thread::sleep_for(chrono::milliseconds(delay));
-            delay += 15; // Slow down effect
+            delay += 15; // Efekt zwalniania
         }
         
         this_thread::sleep_for(chrono::milliseconds(500));
-        cout << "\r                                       " << flush; // Clear line
+        cout << "\r                                       " << flush; // Wyczyść linię
         cout << "\rWYGRANO: " << wonItem.getDisplayName() << "!" << endl;
         this_thread::sleep_for(chrono::milliseconds(1000));
     }
